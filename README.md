@@ -39,8 +39,8 @@ Spring:
     - Security
 
 ## Architecture 
-    - [Docs](https://docs.spring.io/spring-security/reference/servlet/architecture.html)
-    - [Other docs](https://medium.com/@rasheed99/introduction-on-spring-security-architecture-eb5d7de75a4f)
+[Docs](https://docs.spring.io/spring-security/reference/servlet/architecture.html)
+[Other docs](https://medium.com/@rasheed99/introduction-on-spring-security-architecture-eb5d7de75a4f)
 
 ### WorkFlow
-    ![For All Flow](https://miro.medium.com/v2/resize:fit:828/format:webp/1*bXZoyANJiP9aqxSqtFbo_A.png)
+![For All Flow](https://miro.medium.com/v2/resize:fit:828/format:webp/1*bXZoyANJiP9aqxSqtFbo_A.png)
