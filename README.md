@@ -36,11 +36,24 @@ Spring:
 ```
         => show h2 database with path http://localhost:8080/h2
     
-    - Security
+## Security
 
-## Architecture 
+### Architecture 
 [Docs](https://docs.spring.io/spring-security/reference/servlet/architecture.html)
 [Other docs](https://medium.com/@rasheed99/introduction-on-spring-security-architecture-eb5d7de75a4f)
 
 ### WorkFlow
 ![For All Flow](https://miro.medium.com/v2/resize:fit:828/format:webp/1*bXZoyANJiP9aqxSqtFbo_A.png)
+
+### Diễn giải, tiếng việt
+    * Giới thiệu
+        - Thông thường, trong Spring MVC hay SpringBoot , tất cả các Http request gửi đến sẽ được chuyển qua một "Servlet" 
+        duy nhất được gọi là "DispatcherServlet". Servlet sẽ điều hướng các request này tới các controller (endpoints).
+        - Về cốt lõi Spring Security là chuỗi (chains) các bộ lọc (Filter) được thêm vào trước khi các request đến được
+        "DispatcherServlet".
+        -> Tất cả các request được gửi đến sẽ phải đi qua các filter. Các tiếp cận này giúp xác minh (authentication) cũng 
+        như phân quyền (authorization) các request trước khi đi qua "DispatcherServlet" và cuối cùng là các Controller (endpoints).
+        
+#### Luồng đi của request khi có Spring Security
+![Filter Chain](https://docs.spring.io/spring-security/reference/_images/servlet/architecture/filterchain.png)
+![Filter chain](https://www.marcobehler.com/images/servletfilter-1a.png) 
