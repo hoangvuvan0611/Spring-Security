@@ -43,4 +43,4 @@ Spring:
     - [Other docs](https://medium.com/@rasheed99/introduction-on-spring-security-architecture-eb5d7de75a4f)
 
 ### WorkFlow
-    ![img.png](img.png)
+    ![For All Flow](https://miro.medium.com/v2/resize:fit:828/format:webp/1*bXZoyANJiP9aqxSqtFbo_A.png)
