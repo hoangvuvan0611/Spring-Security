@@ -12,7 +12,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
   #    properties:
 #      hibernate:
@@ -22,4 +22,11 @@ spring:
       enabled: true
       path: /h2
 
-
+security:
+  jwt:
+    token:
+      secret-key: "khgfjdkhg45345djfhgkdhguytit4yfdss34yt49hrughkdjfhgkfdhgdkfhgkddas"
+      # 1 days: 1000*60*60*24
+      expiration: 86400000
+      # 2 days
+      refresh_expiration: 172800000

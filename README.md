@@ -299,6 +299,7 @@ String username = authentication.getName();
 
 ### JWT 
 [Reference Spring Security JWT](https://medium.com/@dilankacm/spring-security-architecture-explained-with-jwt-authentication-example-spring-boot-5cc583a9aeac)
+[Other](https://dev.to/m1guelsb/authentication-and-authorization-with-spring-boot-4m2n)
 * GrantedAuthority
   * Đại diện cho một quyền (role - authorities) được cấp cho người dùng.
   * Quyền thường là các vai trò hoặc quyền giúp xác định xem những thao tác mà user có thể thực hiện.
@@ -308,3 +309,4 @@ String username = authentication.getName();
 * UserNamePasswordAuthenticationToken
   * Là class đại diện cho "Authentication" dựa trên username và password được truyền vào và lưu trữ dưới object
   principal và credentials. Nó là implement của "Authentication Interface" - (đối tượng sẽ được lưu trữ trong context).
+
