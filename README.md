@@ -42,7 +42,7 @@ Spring:
 [Other docs](https://magz.techover.io/2023/01/02/spring-security-tim-hieu-ve-internal-flow/)
 
 ## WorkFlow
-![For All Flow](https://miro.medium.com/v2/resize:fit:828/format:webp/1*bXZoyANJiP9aqxSqtFbo_A.png)
+![For All Flow](https://miro.medium.com/v2/resize:fit:828/format:webp/1*kcfwR4V_9P8VjXz_xMgqZw.png)
 
 ## Diễn giải, tiếng việt
 * Giới thiệu
@@ -100,6 +100,37 @@ public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
 ``` 
 Một ví dụ đơn giản cho cấu hình "Security Filter Chain", cho phép truy cập không giới hạn với url "/signup", trong 
 khi đó yêu cầu xác thực với url "users".
+
+Một cấu hình khác:
+```java
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.cors().and()
+            .csrf(csrf -> csrf.disable())
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth ->
+                    auth.requestMatchers("/open/**").permitAll()
+                            .anyRequest().authenticated()
+            )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(authenticationJwTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+}
+```
+* Các cấu hình được định nghĩa
+  * .cors().and(): cấu hình chia sẻ tài nguyên chéo
+  * .csrf(csrf -> csrf.disable()): vô hiệu hóa "CSRF", cấu hình này được sử dụng khi xác thực bằng JWT
+  * .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler)): xử lý cấu hình khi truy
+  cập bị từ chối.
+  * .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)): chương trình sẽ không
+  tạo và sử dụng HTTP Session để bảo mật.
+  * .authorizeHttpRequests(auth -> auth.requestMatchers("/open/**").permitAll().anyRequest().authenticated()): các request
+  với url "/open/**" không cần xác thực, còn mọi url khác đều yêu cầu xác thực.
+  * .authenticationProvider(authenticationProvider()): Khai báo một "AuthenticationProvider" đã được triển khai với 
+  "DaoAuthenticationProvider" hoặc bất kỳ implement nào sẽ được sử dụng để xác thực.
+  * .addFilterBefore(authenticationJwTokenFilter(), UsernamePasswordAuthenticationFilter.class): chèn một Filter tùy 
+  chỉnh, Filter này trước khi các logic khác của "Filter Chain" được thực hiện. Đây là cách triển khai chung cho JWT.
 
 #### Authentication Manager
 * Mô tả:
@@ -215,5 +246,65 @@ public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
 }
 ```
+* UserDetails
+  * Nó thể hiện các chi tiết chính của user, bao gồm username, password và authorities.
+  * Spring Security sử dụng "UserDetails" để lưu trữ thông tin về user được xác thực.
+```java
+public interface UserDetails extends Serializable {
+    Collection<? extends GrantedAuthority> getAuthorities();
+
+    String getPassword();
+
+    String getUsername();
+
+    boolean isAccountNonExpired();
+
+    boolean isAccountNonLocked();
+
+    boolean isCredentialsNonExpired();
+
+    boolean isEnabled();
+}
+```
 
 #### SecurityContextHolder and Principal
+* Mô tả:
+  * SecurityContextHolder quản lý "Security context" của user trong suốt "Request-Response LifeCycle". Nó lưu trữ
+  thông tin của user được xác thực như role hoặc các thông tin xác thực khác.
+  * Khi user được xác thực thành công "Spring Security" sẽ tạo ra các "Authentication Object" và được "SecurityContextHolder"
+  quản lý.
+```java
+Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+String username = authentication.getName();
+```
+  * Principal đại diện cho username, authorities và các dữ liệu cụ thể khác của user.
+
+
+### Request & Response lifecycle
+![Lifecycle](https://miro.medium.com/v2/resize:fit:828/format:webp/1*bXZoyANJiP9aqxSqtFbo_A.png)
+
+* Luồng
+  * B1: Request đến bị chặn bởi "SecurityFilterChain", nơi bao gồm một loạt các Filter, mỗi Filter có nhiệm vụ bảo mật
+  cụ thể.
+  * B2: Nếu user chưa được xác thực (chưa đăng nhập), các Fliter sẽ kích hoạt trình quản lý xác thực. Nếu thông tin 
+  đăng nhập hợp lệ, một Authentication object sẽ được tạo ra.
+  * B3: AuthenticationManager sử dụng "AuthenticationProvider" để xác minh thông tin user.
+  * B4: AuthenticationProvider sử dụng "PasswordEncoder" để lưu trữ và so sánh mật khẩu.
+  * B5: AuthenticationProvider sử dụng UserDetailService lấy thông tin chi tiết của user, thông tin lấy được sẽ được 
+  so sánh với thông tin cần xác thực được đưa vào.
+  * B6: UserDetailService lấy dữ liệu user cần xác thực từ Database.
+  * B7: Trạng thái xác thực sẽ được gửi tới người dùng dưới dạng "success response" hoặc "anauthorized response".
+  * B8: Authentication object được tạo ra sẽ được lưu trữ trong "Security Context" quản lý bởi "SecurityContextHolder"
+  
+
+### JWT 
+[Reference Spring Security JWT](https://medium.com/@dilankacm/spring-security-architecture-explained-with-jwt-authentication-example-spring-boot-5cc583a9aeac)
+* GrantedAuthority
+  * Đại diện cho một quyền (role - authorities) được cấp cho người dùng.
+  * Quyền thường là các vai trò hoặc quyền giúp xác định xem những thao tác mà user có thể thực hiện.
+  * Implement của nó được sử dụng thường xuyên là "SimpleGrantedAuthority".
+![GrantedAuthority's Implements](img_3.png)
+
+* UserNamePasswordAuthenticationToken
+  * Là class đại diện cho "Authentication" dựa trên username và password được truyền vào và lưu trữ dưới object
+  principal và credentials. Nó là implement của "Authentication Interface" - (đối tượng sẽ được lưu trữ trong context).
