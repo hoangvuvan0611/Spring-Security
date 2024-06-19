@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.vvh.springsecurity.entity.User;
@@ -35,7 +36,9 @@ public class JWTProvider {
         long expirationTime = TokenTypeEnum.ACCESS_TOKEN.equals(tokenType) ? expiration : refreshExpiration;
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("authorities", user.getAuthorities())
+                .claim("authorities", user.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.joining(",")))
                 .signWith( key() ,SignatureAlgorithm.HS256)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
@@ -48,7 +51,7 @@ public class JWTProvider {
         Collection<SimpleGrantedAuthority> authorities = Arrays
                 .stream(claims.get("authorities").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
-                .toList();
+                .collect(Collectors.toList());
         return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
 

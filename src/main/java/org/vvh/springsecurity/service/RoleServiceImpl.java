@@ -21,11 +21,11 @@ public class RoleServiceImpl implements RoleService{
             throw new AlreadyExistsException("Role already exists");
         }
         Role role = Role.builder()
-                .name(RoleEnum.ROLE_USER)
+                .name(RoleEnum.USER)
                 .build();
         roleRepository.save(role);
         role = Role.builder()
-                .name(RoleEnum.ROLE_ADMIN)
+                .name(RoleEnum.ADMIN)
                 .build();
         roleRepository.save(role);
     }

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.vvh.springsecurity.service.JWTProvider;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -30,9 +32,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = paresJwt(request);
             if (jwt != null && jwtProvider.validateToken(jwt)) {
-                SecurityContextHolder.getContext().setAuthentication(
-                        jwtProvider.parseTokenToExtractUserInfo(jwt)
-                );
+                SecurityContextHolder.getContext().setAuthentication(jwtProvider.parseTokenToExtractUserInfo(jwt));
             }
         } catch (Exception ex) {
             logger.error("Cannot set User Authenticaion :{}", ex);

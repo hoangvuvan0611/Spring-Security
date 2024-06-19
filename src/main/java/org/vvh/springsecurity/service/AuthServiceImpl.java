@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService{
         Set<Role> roles = new HashSet<>();
 
         if(registerRequest.role() == null) {
-            Role role = roleRepository.findByName(RoleEnum.ROLE_USER)
+            Role role = roleRepository.findByName(RoleEnum.USER)
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
             roles.add(role);
         } else {

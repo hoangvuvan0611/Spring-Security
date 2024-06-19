@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.vvh.springsecurity.dto.model.UserDTO;
-import org.vvh.springsecurity.dto.request.SignUpRequest;
 import org.vvh.springsecurity.dto.response.ResponseData;
 import org.vvh.springsecurity.dto.response.ResponseDataList;
 import org.vvh.springsecurity.dto.response.ResponseError;
@@ -33,8 +32,8 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/all")
+    @PreAuthorize(value = "hasAnyAuthority('USER')")
     public ResponseData<?> getAllUsers() {
         try {
             ResponseDataList<UserDTO> userDTOResponseDataList = new ResponseDataList<>(userService.findAll());
